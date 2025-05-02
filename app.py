@@ -1,89 +1,70 @@
 import streamlit as st
 from textblob import TextBlob
 from googletrans import Translator
-from streamlit_lottie import st_lottie
-import json
 
-# Estilos personalizados
+# Estilos generales con tema claro suave y minimalista
 st.markdown("""
     <style>
     .stApp {
-        background-color: #1e1e1e;
-        color: #dce2e8;
-        font-family: 'Segoe UI', sans-serif;
+        background-color: #f4f4f9;
+        color: #333333;
+        font-family: 'Arial', sans-serif;
     }
-
     textarea, .stTextInput>div>div>input {
-        background-color: #2c2f33;
-        color: #dce2e8;
-        border: 1px solid #3a3f47;
-    }
-
-    .stImage {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
+        background-color: #ffffff;
+        color: #333333;
+        border: 1px solid #cccccc;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Sidebar estilo
-sidebar_css = """
+# Sidebar sin imágenes y con otro color
+st.markdown("""
     <style>
     .css-1d391kg {
-        background-color: #0e1117 !important;
+        background-color: #dceef2 !important;
     }
-
     .css-1v3fvcr, .css-1d391kg .sidebar-content {
-        color: #50fa7b !important;
+        color: #005f73 !important;
     }
     </style>
-"""
-st.markdown(sidebar_css, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 translator = Translator()
 
-# Título
-st.title('🔍 LENS: Language Emotion & Nuance Scanner')
-st.caption("Analiza el tono emocional y la perspectiva de cualquier texto.")
+# Título y subtítulo diferentes
+st.title("LENGUA EMOCIONAL")
+st.subheader("Transforma tus palabras en datos sobre emociones y percepción")
 
+# Sidebar sin imágenes
 with st.sidebar:
-    st.image('lens_logo.png', use_container_width=True)  # Reemplaza con un logo más neutro
-    st.subheader("¿Qué mide LENS?")
+    st.subheader("Indicadores emocionales")
     st.markdown("""
-    <div style='color:#50fa7b'>
-    <b>Polaridad:</b> Evalúa el tono emocional del texto, desde negativo (-1) a positivo (1).<br><br>
-    <b>Subjetividad:</b> Indica cuán opinativo es el texto (0 = objetivo, 1 = subjetivo).
+    <div style='color:#005f73'>
+    <b>Polaridad:</b> Representa si el texto tiene un tono negativo (-1), neutro (0) o positivo (1).
+    <br><br>
+    <b>Subjetividad:</b> Señala si el contenido es objetivo (0) o subjetivo (1), útil para saber si se basa en hechos o emociones.
     </div>
     """, unsafe_allow_html=True)
 
-with st.expander("📘 Analiza tu texto:"):
-    text1 = st.text_area("Introduce un texto para evaluar su tono emocional (preferiblemente en inglés):")
-
+# Área de análisis
+with st.expander('Interpretar emociones a partir del texto'):
+    text1 = st.text_area('Escribe algo (en inglés o español) para analizar su tono emocional:')
     if text1:
-        translation = translator.translate(text1, src="es", dest="en")
+        translation = translator.translate(text1, src="auto", dest="en")
         trans_text = translation.text
         blob = TextBlob(trans_text)
 
         polarity = round(blob.sentiment.polarity, 2)
         subjectivity = round(blob.sentiment.subjectivity, 2)
 
-        st.markdown("### 🧠 Resultados del análisis")
         st.write('**Polaridad:**', polarity)
         st.write('**Subjetividad:**', subjectivity)
 
         if polarity >= 0.5:
-            st.success("🔵 El texto tiene una carga emocional positiva.")
-            with open('positive.json') as source:
-                animation = json.load(source)
-                st_lottie(animation, width=350)
+            st.success("Mensaje con carga positiva.")
         elif polarity <= -0.5:
-            st.error("🔴 El texto expresa un sentimiento negativo.")
-            with open('negative.json') as source:
-                animation = json.load(source)
-                st_lottie(animation, width=350)
+            st.error("Mensaje con carga negativa.")
         else:
-            st.info("🟡 El texto se percibe como neutral.")
-            with open('neutral.json') as source:
-                animation = json.load(source)
-                st_lottie(animation, width=350)
+            st.info("Mensaje con tono neutral.")
+
